@@ -4,7 +4,6 @@ idea from [Rob Konigsberg](http://github.com/kberg), who was using Dash buttons
 to make his Sonos play radio stations. This version serves local MP3s and plays
 different directories depending on which button you press.
 
-## What's happening
 server.py runs as root on a linux machine on the same wifi as your Sonos(es).
 It notices arp traffic from other devices on your network. It's configured to
 watch for a bunch of specific MAC addresses and trigger an action (defined in
@@ -20,15 +19,19 @@ sudo pip install scapy       # For sniffing the network
 sudo pip install soco        # for Sonos  
 sudo pip install requests    # For REST API  
 
-### Edit config
+### Put MP3s in place
+You need a long-running Linux machine on your local network to run server.py
+on. Make a directory under its cwd called "mp3s". Make directories under that
+with mp3s in them. Use those directory names in your config.
+
+### Edit the config
 Change buttons.py to list your MAC addresses, button names and actions. There's
 one action so far, '*play_local*'. It plays a directory of music from the
 machine that this is running on.
 
-### Run scripts
-You need a long-running Linux machine on your local network to run server.py
-on. Make a directory under its cwd called "mp3s", Put the mp3s to play under
-that.
+### Run the server
+
+`sudo server.py`
 
 ## Testing it
 Add your computer as a button in buttons.py, and trigger arp traffic from
