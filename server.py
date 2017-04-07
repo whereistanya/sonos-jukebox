@@ -13,8 +13,8 @@ import os
 import sys
 import time
 import urllib
-import scapy.all as scapy
 from threading import Thread
+import scapy.all as scapy
 
 import buttons
 import localwebserver
@@ -32,6 +32,7 @@ class Sniffer(Thread):
       player: (sonos.Player) An initialised sonos.Player, which knows about
               your devices.
     """
+    super(Sniffer, self).__init__()
     self.webserver = local_uri
     self.player = player
     self.last_seen = {}  # For de-duping button clicks.

@@ -2,17 +2,19 @@
 """Handle interactions with the Sonos devices on the network."""
 
 import logging
+from threading import Thread
 import soco
 
 class PlayerException(Exception):
   """We can't play sonos for any reason."""
   pass
 
-class Player(object):
+class Player(Thread):
   """Finds the available Sonos devices and plays music on them."""
 
   def __init__(self):
     """Find local players."""
+    super(Player, self).__init__()
     self.zones = {}
     for zone in soco.discover():
       self.zones[zone.player_name] = zone

@@ -1,6 +1,6 @@
 ## What is this?
 A thing that lets you control your Sonos using Amazon Dash buttons. I stole this
-idea from [Rob Konisgberg](http://github.com/kberg), who was using Dash buttons
+idea from [Rob Konigsberg](http://github.com/kberg), who was using Dash buttons
 to make his Sonos play radio stations. This version serves local MP3s and plays
 different directories depending on which button you press.
 
