@@ -35,7 +35,7 @@ machine that this is running on.
 
 ## Testing it
 Add your computer as a button in buttons.py, and trigger arp traffic from
-it. On linux, you do that with `arping -c 1 [IP]`.
+it. On linux, you do that with `arping -c 1 [any IP]`.
 
 ## How do I know what my MAC address is?
 On a linux machine, you can do `ifconfig` and copy the HWaddr and inet addr of
