@@ -36,6 +36,7 @@ class Sniffer(Thread):
     self.webserver = local_uri
     self.player = player
     self.last_seen = {}  # For de-duping button clicks.
+    self.last_button = ""
 
   def run_forever(self):
     """Sniff network traffic. Call arp_cb() against any arp packets."""
@@ -72,12 +73,18 @@ class Sniffer(Thread):
     except KeyError:
       logging.warning("No instructions found for button %s.", button)
       return
+
     self.last_seen[button] = time.time()
 
     try:
       function, music, zone = cmd
     except ValueError, ex:
       logging.warning("Couldn't parse instructions from %s: %s", cmd, ex)
+      return
+
+    # If this is the same button we saw last, pause or unpause it.
+    if button == self.last_button:
+      self.player.toggle(zone)
       return
 
     if function == "play_local":
@@ -90,6 +97,7 @@ class Sniffer(Thread):
                                    urllib.pathname2url(filename)))
 
       self.player.play(sorted(mp3s), zone)
+      self.last_button = button
     elif function == "play_radio":
       self.player.play_radio(music, zone)
     else:

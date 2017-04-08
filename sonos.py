@@ -18,10 +18,20 @@ class Player(Thread):
     self.zones = {}
     for zone in soco.discover():
       self.zones[zone.player_name] = zone
-
     if len(self.zones) == 0:
       raise PlayerException("Can't find any Sonos zones.")
 
+  def toggle(self, zone_name):
+    """Pause or unpause the zone."""
+    zone = self.zones[zone_name]
+    info = zone.get_current_transport_info()
+    state = info['current_transport_state']
+    if state == "PLAYING":
+      logging.warning("Zone %s has state %s. Pausing.", zone_name, state)
+      self.pause(zone_name)
+    else:
+      logging.warning("Zone %s has state %s. Playing.", zone_name, state)
+      self.unpause(zone_name)
 
   def have_zone(self, zone):
     """Returns whether this is a zone we know about.
@@ -31,6 +41,23 @@ class Player(Thread):
     """
     return zone in self.zones.keys()
 
+  def pause(self, zone_name):
+    """Pause the currently playing music in the zone.
+
+      Args:
+        zone_name: (string) Which Sonos to pause.
+    """
+    zone = self.zones[zone_name]
+    zone.pause()
+
+  def unpause(self, zone_name):
+    """Unpause the music in the zone.
+
+      Args:
+        zone_name: (string) Which Sonos to unpause.
+    """
+    zone = self.zones[zone_name]
+    zone.play()
 
   def play(self, urls, zone_name):
     """Play a bunch of MP3s from their URLs.
