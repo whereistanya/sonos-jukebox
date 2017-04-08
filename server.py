@@ -88,20 +88,29 @@ class Sniffer(Thread):
       return
 
     if function == "play_local":
-      # Look at all the files in the specified directory and add their URIs.
-      mp3s = []
-      files = os.listdir(music)
-      for filename in files:
-        if filename.endswith(".mp3"):
-          mp3s.append(os.path.join(self.webserver, music,
-                                   urllib.pathname2url(filename)))
-
-      self.player.play(sorted(mp3s), zone)
+      self.play_local(music, zone)
       self.last_button = button
     elif function == "play_radio":
       self.player.play_radio(music, zone)
     else:
       logging.warning("Don't know how to %s.", cmd)
+
+  def play_local(self, music, zone):
+    """Send the player a bunch of local files to play.
+
+    Args:
+      music: (str) the directory to play, relative to this process's CWD
+      zone: (str) the Sonos to play on
+    """
+    # Look at all the files in the specified directory and add their URIs.
+    mp3s = []
+    files = os.listdir(music)
+    for filename in files:
+      if filename.endswith(".mp3"):
+        mp3s.append(os.path.join(self.webserver, music,
+                                 urllib.pathname2url(filename)))
+
+    self.player.play(sorted(mp3s), zone)
 
 
 def main():
