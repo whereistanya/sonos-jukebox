@@ -89,7 +89,7 @@ class Sniffer(Thread):
           mp3s.append(os.path.join(self.webserver, music,
                                    urllib.pathname2url(filename)))
 
-      self.player.play(mp3s, zone)
+      self.player.play(sorted(mp3s), zone)
     elif function == "play_radio":
       self.player.play_radio(music, zone)
     else:
