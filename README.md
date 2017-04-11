@@ -61,6 +61,6 @@ to 'Your account' and scroll down to 'Dash devices'. Start setting up the device
 as they describe it, but don't connect it to a product; just get it onto your
 wireless network.
 
-Then follow the instructions above to get the MAC and IP address. Press the
+Then follow the instructions above to get the MAC address. Press the
 button, and it should show up as arp traffic. Hopefully your network
 is relatively quiet, so it'll be easy to pick out the Amazon Dash.
