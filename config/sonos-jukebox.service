@@ -1,0 +1,21 @@
+# systemd file for sonos-jukebox. Drop this at
+# /etc/systemd/system/sonos-jukebox.service
+# You probably need to change the directory in WorkingDirectory= and
+# ExecStart= to point at wherever the code is.
+
+[Unit]
+Description=Sonos Jukebox
+After=syslog.target network.target network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/pi/sonos-jukebox
+ExecStart=/home/pi/sonos-jukebox/server.py
+Restart=always
+LimitNOFILE=10000
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=sonos-jukebox
+
+[Install]
+WantedBy=multi-user.target
