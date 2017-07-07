@@ -18,7 +18,10 @@ class HttpServer(Thread):
     super(HttpServer, self).__init__()
     self.daemon = True
     handler = SimpleHTTPRequestHandler
-    self.httpd = TCPServer(("", port), handler)
+    self.httpd = TCPServer(("", port), handler, bind_and_activate=False)
+    self.httpd.allow_reuse_address = True
+    self.httpd.server_bind()
+    self.httpd.server_activate()
 
   def run(self):
     """Start the webserver."""
