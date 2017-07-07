@@ -10,6 +10,7 @@ MACS = {
     '40:b4:cd:9c:b7:cd': 'ziploc',
     '40:b4:cd:d0:a0:24': 'brooklyn',
     '68:37:e9:10:20:45': 'cascade',
+    'e4:a7:a0:4a:52:d1': 'tester',
 }
 
 # play_local, directory_to_play, device
@@ -19,4 +20,5 @@ COMMANDS = {
     'ziploc': ['play_local', 'here_come_the_123s', 'Living Room'],
     'brooklyn': ['play_local', 'why', 'Living Room'],
     'cascade': ['play_local', 'no', 'Living Room'],
+    'tester': ['test_display', 'test', 'Living Room'],
 }
