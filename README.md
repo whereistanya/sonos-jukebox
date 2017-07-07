@@ -33,6 +33,9 @@ machine that this is running on.
 
 `sudo server.py`
 
+or make it start by default by adding an init.d or systemd config. There's a
+systemd example at config/sonos-jukebox.service.
+
 ## Testing it
 Add your computer as a button in buttons.py, and trigger arp traffic from
 it. On linux, you do that with `arping -c 1 [any IP]`.
