@@ -29,12 +29,13 @@ Change buttons.py to list your MAC addresses, button names and actions. There's
 one action so far, '*play_local*'. It plays a directory of music from the
 machine that this is running on.
 
-### Run the server
+### Run the server as root
 
 `sudo server.py`
 
-or make it start by default by adding an init.d or systemd config. There's a
-systemd example at config/sonos-jukebox.service.
+or make it start on boot by adding an init.d or systemd config. There's a
+systemd example at [config/sonos-jukebox.service](
+https://github.com/whereistanya/sonos-jukebox/blob/master/config/sonos-jukebox.service).
 
 ## Testing it
 Add your computer as a button in buttons.py, and trigger arp traffic from
