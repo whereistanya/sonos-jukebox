@@ -23,9 +23,7 @@ class Player(Thread):
 
   def toggle(self, zone_name):
     """Pause or unpause the zone."""
-    zone = self.zones[zone_name]
-    info = zone.get_current_transport_info()
-    state = info['current_transport_state']
+    state = self.get_state(zone_name)
     if state == "PLAYING":
       logging.warning("Zone %s has state %s. Pausing.", zone_name, state)
       self.pause(zone_name)
@@ -82,3 +80,32 @@ class Player(Thread):
   def play_radio(self, url, zone_name):
     """TODO(tanya): Implement aac-playing."""
     pass
+
+
+  def get_current(self, zone_name):
+    """Return current playing track as a dict.
+
+    Args:
+      zone_name: (string) Which Sonos to play on.
+    Returns:
+      ({'string': 'string'}) a dict of track information including album,
+                             artist, title, etc.
+   """
+    if not self.have_zone(zone_name):
+      raise PlayerException("Can't find the %s zone. Have %s" % (
+          zone_name, self.zones.keys()))
+    zone = self.zones[zone_name]
+    return zone.get_current_track_info()
+
+  def get_state(self, zone_name):
+    """Return current playing state (playing, paused).
+
+    Args:
+      zone_name: (string) Which Sonos to play on.
+    Returns:
+      (string): play state
+    """
+
+    zone = self.zones[zone_name]
+    info = zone.get_current_transport_info()
+    return info['current_transport_state']

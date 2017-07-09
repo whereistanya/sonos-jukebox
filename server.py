@@ -15,6 +15,7 @@ import time
 import urllib
 from threading import Thread
 import scapy.all as scapy
+import signal
 
 import buttons
 import display
@@ -31,7 +32,7 @@ signal.signal(signal.SIGHUP, handler)
 class Sniffer(Thread):
   """Sniffs for arp traffic and takes actions based on what it gets."""
 
-  def __init__(self, local_uri, player, screen):
+  def __init__(self, local_uri, player):
     """Start sniffing the network.
 
     Args:
@@ -44,7 +45,6 @@ class Sniffer(Thread):
     super(Sniffer, self).__init__()
     self.webserver = local_uri
     self.player = player
-    self.screen = screen
     self.last_seen = {}  # For de-duping button clicks.
     self.last_button = ""
 
@@ -98,26 +98,12 @@ class Sniffer(Thread):
       return
 
     if function == "play_local":
-      self.update_display(music)
       self.play_local(music, zone)
       self.last_button = button
-    elif function == "test_display":
-      self.update_display("Just testing!")
     elif function == "play_radio":
       self.player.play_radio(music, zone)
     else:
       logging.warning("Don't know how to %s.", cmd)
-
-  def update_display(self, text):
-    """If there's an attached screen, write something on it.
-
-    I'll eventually replace this with album art or something exciting.
-
-    Args:
-      text: (str) Something to display on the screen.
-    """
-    if self.screen:
-      self.screen.set_message(text)
 
   def play_local(self, music, zone):
     """Send the player a bunch of local files to play.
@@ -154,7 +140,9 @@ def main():
   # Use a local display if one is available.
   screen = None
   if display.HAVE_PYGAME:
-    screen = display.Display(320, 240)
+    # TODO(tanya): Don't hard-code the player name, get it from the buttons
+    # config.
+    screen = display.Display(320, 240, player, "Living Room")
     screen.start()
 
   webserver = localwebserver.HttpServer(port)
@@ -164,7 +152,7 @@ def main():
 
   print "Serving MP3s at %s." % uri
 
-  sniffer = Sniffer(uri, player, screen)
+  sniffer = Sniffer(uri, player)
   sniffer.run_forever()
 
 main()

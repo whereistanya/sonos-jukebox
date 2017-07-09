@@ -20,5 +20,5 @@ COMMANDS = {
     'ziploc': ['play_local', 'here_come_the_123s', 'Living Room'],
     'brooklyn': ['play_local', 'why', 'Living Room'],
     'cascade': ['play_local', 'no', 'Living Room'],
-    'tester': ['test_display', 'test', 'Living Room'],
+#    'tester': ['test_display', 'test', 'Living Room'],
 }
