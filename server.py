@@ -22,6 +22,12 @@ import localwebserver
 import my_ip
 import sonos
 
+def handler(signum, frame):
+  """Why is systemd sending sighups? I DON'T KNOW."""
+  logging.warning("Got a {} signal. Doing nothing".format(signum))
+
+signal.signal(signal.SIGHUP, handler)
+
 class Sniffer(Thread):
   """Sniffs for arp traffic and takes actions based on what it gets."""
 
