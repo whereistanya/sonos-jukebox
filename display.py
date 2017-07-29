@@ -7,22 +7,31 @@ a desktop, it'll just make a tiny window. Oh well.
 """
 
 import os
+from signal import alarm, signal, SIGALRM, SIGKILL
 from threading import Thread
 
 HAVE_PYGAME = True
 
-# If pygame's not installed, that shouldn't stop the binary from running.
 # pip install pygame
 # sudo easy_install -U distribute
 # pip install pygameui
 # I had mysterious egg errors until I also did
 # pip install setuptools
 
+# If pygame's not installed, that shouldn't stop the binary from running.
 try:
   import pygame
   import pygameui
 except ImportError:
   HAVE_PYGAME = False
+
+
+class Alarm(Exception):
+  """A deadline for things that get wedged."""
+  pass
+
+def alarm_handler(signum, frame):
+  raise Alarm
 
 class Display(object):
   """If there's a display attached, display stuff on it."""
@@ -46,7 +55,18 @@ class Display(object):
     self.sonos_name = sonos_name
     pygame.init()
     pygame.mouse.set_visible(False)
-    self.screen = pygame.display.set_mode((self.xsize, self.ysize))
+
+    # set_mode hangs if something else is using the display and needs a ^C to
+    # continue. Time out after two seconds. This is kind of a hack :-/
+    signal(SIGALRM, alarm_handler)
+    alarm(2)
+    try:
+      print "Attempting to initialise the display. Waiting up to two seconds."
+      self.screen = pygame.display.set_mode((self.xsize, self.ysize))
+      alarm(0)
+    except Alarm:
+      raise KeyboardInterrupt
+
     self.font20 = pygame.font.SysFont("verdana", 20)
     self.font12 = pygame.font.SysFont("verdana", 12)
     self.clock = pygame.time.Clock()
