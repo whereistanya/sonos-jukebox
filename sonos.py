@@ -16,10 +16,11 @@ class Player(Thread):
     """Find local players."""
     super(Player, self).__init__()
     self.zones = {}
-    for zone in soco.discover():
+    zones = soco.discover()
+    if zones is None:
+      raise PlayerException("Can't find any Sonos players.")
+    for zone in zones:
       self.zones[zone.player_name] = zone
-    if len(self.zones) == 0:
-      raise PlayerException("Can't find any Sonos zones.")
 
   def toggle(self, zone_name):
     """Pause or unpause the zone."""
