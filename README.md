@@ -1,4 +1,11 @@
 ## What is this?
+
+**talker/talker.py**
+A command-line script that makes the sonos say words. Use it like
+./talker.py "This is a damn fine cup of coffee." It briefly spins up a webserver
+to get the sound file to the Sonos.
+
+**server.py**
 A thing that lets you control your Sonos using Amazon Dash buttons. I stole this
 idea from [Rob Konigsberg](http://github.com/kberg), who was using Dash buttons
 to make his Sonos play radio stations. This version serves local MP3s and plays
