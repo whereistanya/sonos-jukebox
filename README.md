@@ -1,11 +1,21 @@
-## What is this?
+This directory has two toy projects for interacting with Sonos players.
 
-**talker/talker.py**
+# **talker/talker.py**
 A command-line script that makes the sonos say words. Use it like
 ./talker.py "This is a damn fine cup of coffee." It briefly spins up a webserver
 to get the sound file to the Sonos.
 
-**server.py**
+## Requirements
+
+### Install python modules
+sudo pip install soco        # for Sonos  
+sudo pip install gtts        # for converting text to speech
+
+## Modify talker.py
+Set *SONOS_NAME* to your Sonos. Change the *PORT* too if you want.
+
+
+# **server.py**
 A thing that lets you control your Sonos using Amazon Dash buttons. I stole this
 idea from [Rob Konigsberg](http://github.com/kberg), who was using Dash buttons
 to make his Sonos play radio stations. This version serves local MP3s and plays
