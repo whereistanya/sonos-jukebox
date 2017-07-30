@@ -15,17 +15,19 @@ Set *SONOS_NAME* to your Sonos. Change the *PORT* too if you want.
 ## Using it
 
 Use it like
-./talker.py "This is a damn fine cup of coffee." It briefly spins up a webserver
+./talker.py "This is a damn fine cup of coffee." 
+
+It briefly spins up a webserver
 to get the sound file to the Sonos. Does not need to be run as root.
 
 ## Testing/Debugging
 You can see your Sonoses's names by using the soco library 
 
-$ python
->>> import soco
->>> for sonos in soco.discover(): print sonos.player_name
-Living Room
-Bedroom
+$ python  
+\>\>\> import soco  
+\>\>\> for sonos in soco.discover(): print sonos.player_name  
+Living Room  
+Bedroom  
 
 ------------------------------------------------------------------------------
 
