@@ -9,6 +9,10 @@ A command-line script that makes the sonos say words.
 sudo pip install soco        # for Sonos  
 sudo pip install gtts        # for converting text to speech
 
+You might also need to upgrade requests
+
+sudo pip install --upgrade requests
+
 ### Modify talker.py
 Set *SONOS_NAME* to your Sonos. Change the *PORT* too if you want.
 
