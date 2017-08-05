@@ -79,6 +79,16 @@ https://github.com/whereistanya/sonos-jukebox/blob/master/config/sonos-jukebox.s
 Add your computer as a button in buttons.py, and trigger arp traffic from
 it. On linux, you do that with `arping -c 1 [any IP]`.
 
+If you're debugging touchscreen stuff, modify display.py to change
+mouse.set_visible from false to true so you can see what the mouse is doing.
+The mouse pointer was hugging the edge of the screen until I ran the Wheezy
+version of SDL1.2 as described here:  
+https://learn.adafruit.com/adafruit-2-8-pitft-capacitive-touch/pitft-pygame-tips
+
+```
+pygame.mouse.set_visible(True)
+```
+
 ### How do I know what my MAC address is?
 On a linux machine, you can do `ifconfig` and copy the HWaddr and inet addr of
 your own machine.
