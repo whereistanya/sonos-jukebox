@@ -41,6 +41,10 @@ idea from [Rob Konigsberg](http://github.com/kberg), who was using Dash buttons
 to make his Sonos play radio stations. This version serves local MP3s and plays
 different directories depending on which button you press.
 
+There's an optional display component, which will only try to run if you have
+the pygame module installed. It's tested with an adafruit capacitive pitft.
+Just comment out or delete the display in server.py if you don't want it.
+
 server.py runs as root on a linux machine on the same wifi as your Sonos(es).
 It notices arp traffic from other devices on your network. It's configured to
 watch for a bunch of specific MAC addresses and trigger an action (defined in
