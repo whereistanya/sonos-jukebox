@@ -156,7 +156,7 @@ class Display(object):
       self.fill()
       self.check_events()
       pygame.display.flip()
-      self.clock.tick(1) # once a second
+      self.clock.tick(10) # 10x per second
 
   def fill(self):
     """Paint the screen with a background colour, buttons and messages."""
@@ -203,7 +203,6 @@ class Display(object):
       if event.type == pygame.MOUSEBUTTONDOWN:
         x = pygame.mouse.get_pos()[0]
         y = pygame.mouse.get_pos()[1]
-        logging.info("screen pressed at %s, %s" % (x, y))
         for button in self.buttons.values():
           if button.contains(x, y):
             logging.info("Clicked button %s" % button.text)
