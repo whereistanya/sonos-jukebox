@@ -78,6 +78,24 @@ class Player(Thread):
     logging.warning("Queue is now: %s.", queue)
     zone.play_from_queue(0)
 
+  def next(self, zone_name):
+    """Jump to the next track.
+
+      Args:
+        zone_name: (string) Which Sonos to operate.
+    """
+    zone = self.zones[zone_name]
+    zone.next()
+
+  def previous(self, zone_name):
+    """Go back one track.
+
+      Args:
+        zone_name: (string) Which Sonos to operate.
+    """
+    zone = self.zones[zone_name]
+    zone.previous()
+
   def play_radio(self, url, zone_name):
     """TODO(tanya): Implement aac-playing."""
     pass

@@ -5,7 +5,7 @@
 If this is used for a PiTFT attached to a raspberry pi, it'll be perfect. Run on
 a desktop, it'll just make a tiny window. Oh well.
 """
-
+import logging
 import os
 from signal import alarm, signal, SIGALRM, SIGKILL
 from threading import Thread
@@ -26,12 +26,78 @@ except ImportError:
   HAVE_PYGAME = False
 
 
+WHITE = (255, 255, 255)
+RED = (255, 0, 0)
+BLUE = (0, 0, 255)
+GREEN = (0, 102, 0)
+
 class Alarm(Exception):
   """A deadline for things that get wedged."""
   pass
 
 def alarm_handler(signum, frame):
   raise Alarm
+
+class Button(object):
+  """A button to display on the screen."""
+
+  def __init__(self, text, x, y, width, height, color, action):
+    """Coordinates describe top left corner of button.
+
+    Args:
+      text: (str) The button text.
+      x, y, width, height: (int) REgular co-ordinates in pixels
+      color: (int, int, int) RGB value for the colour.
+      action: (str) The name of some action to take when the button is clicked.
+    """
+    self.text = text
+    self.action = action
+    self.x = x
+    self.y = y
+    self.width = width
+    self.height = height
+    self.color = color
+
+  def contains(self, x, y):
+    """Returns whether the co-ordinates are inside this button.
+
+    Args:
+      x, y: (int) Pixel co-ordinates.
+    Returns:
+      (bool) Whether the co-ordinates are inside the button.
+    """
+    if x < self.x or x > (self.x + self.width):
+      return False
+    if y < self.y or y > (self.y + self.height):
+      return False
+    return True
+
+  def get(self):
+    """Return rectangle description for use in pygame.draw.
+
+    Returns:
+      (int, int, int, int): x, y, width, height tuple.
+    """
+    return (self.x, self.y, self.width, self.height)
+
+  def text_pos(self, text):
+    """Return the starting coordinates for blitting text.
+
+    Args:
+      text: (pygame.Surface)
+    Returns
+      (int, int): Co-ordinates tuple.
+    """
+
+    text_x = self.x + (self.width - text.get_width()) / 2
+    text_y = self.y + (self.height - text.get_height()) / 2
+
+    return (text_x, text_y)
+
+  def set_text(self, text):
+    """Python doesn't like setters but I do."""
+    self.text = text
+
 
 class Display(object):
   """If there's a display attached, display stuff on it."""
@@ -61,7 +127,7 @@ class Display(object):
     signal(SIGALRM, alarm_handler)
     alarm(2)
     try:
-      print "Attempting to initialise the display. Waiting up to two seconds."
+      logging.warning("Attempting to initialise the display. Waiting up to two seconds.")
       self.screen = pygame.display.set_mode((self.xsize, self.ysize))
       alarm(0)
     except Alarm:
@@ -70,6 +136,11 @@ class Display(object):
     self.font20 = pygame.font.SysFont("verdana", 20)
     self.font12 = pygame.font.SysFont("verdana", 12)
     self.clock = pygame.time.Clock()
+
+    self.buttons = {}
+    self.buttons["back"] = Button("back", 10, 180, 60, 50, BLUE, "previous")
+    self.buttons["toggle"] = Button("pause", 130, 180, 60, 50, RED, "toggle")
+    self.buttons["skip"] = Button("skip", 250, 180, 60, 50, BLUE, "next")
 
     self.player = player
 
@@ -83,28 +154,72 @@ class Display(object):
     """Run forever and keep refreshing the screen."""
     while True:
       self.fill()
+      self.check_events()
       pygame.display.flip()
       self.clock.tick(1) # once a second
 
   def fill(self):
-    """Paint the screen with a background colour and message."""
-    self.screen.fill((0, 102, 0))  # a nice green
+    """Paint the screen with a background colour, buttons and messages."""
+    self.screen.fill(GREEN)
     track = self.player.get_current(self.sonos_name)
     if track:
-      title = self.font20.render(track['title'], True, (255, 255, 255))
-      album = self.font12.render(track['album'], True, (255, 255, 255))
+      title = self.font20.render(track['title'], True, WHITE)
+      album = self.font12.render(track['album'], True, WHITE)
     else:
-      title = self.font20.render("Sonos Jukebox", True, (255, 255, 255))
-      album = self.font20.render("Nothing is playing", True, (255, 255, 255))
+      title = self.font20.render("Sonos Jukebox", True, WHITE)
+      album = self.font20.render("Nothing is playing", True, WHITE)
+
+    # We print the state, and also change the pause/unpause button's text based
+    # on whether it's currently playing.
     state = self.player.get_state(self.sonos_name)
     if not state:
       state = ""
+    elif state == "PLAYING":
+      self.buttons["toggle"].set_text("pause")
+    if state == "PAUSED_PLAYBACK":
+      state = "PAUSED"
+      self.buttons["toggle"].set_text("play")
+    if state == "STOPPED":
+      self.buttons["toggle"].set_text("")
+
     state_message = self.font20.render(state, True, (255, 255, 255))
 
-    title_x = (self.xsize - title.get_width()) / 2
-    album_x = (self.xsize - album.get_width()) / 2
+    title_x = max((self.xsize - title.get_width()) / 2, 0)
+    album_x = max((self.xsize - album.get_width()) / 2, 0)
     state_x = (self.xsize - state_message.get_width()) / 2
-    self.screen.blit(title, (title_x, 100))
-    self.screen.blit(album, (album_x, 150))
-    self.screen.blit(state_message, (state_x, 200))
+    self.screen.blit(title, (title_x, 60))
+    self.screen.blit(album, (album_x, 110))
+    self.screen.blit(state_message, (state_x, 150))
 
+    for button in self.buttons.values():
+      pygame.draw.rect(self.screen, button.color, button.get())
+      name = self.font12.render(button.text, True, WHITE)
+      self.screen.blit(name, button.text_pos(name))
+
+
+  def check_events(self):
+    """Notice touchscreen presses."""
+    for event in pygame.event.get():
+      if event.type == pygame.MOUSEBUTTONDOWN:
+        x = pygame.mouse.get_pos()[0]
+        y = pygame.mouse.get_pos()[1]
+        logging.info("screen pressed at %s, %s" % (x, y))
+        for button in self.buttons.values():
+          if button.contains(x, y):
+            logging.info("Clicked button %s" % button.text)
+            self.button_action(button.action)
+
+  def button_action(self, action):
+    """Take some action when a UI button was clicked.
+
+    Args:
+      action: (string) What to do.
+    """
+    if action == "next":
+      self.player.next(self.sonos_name)
+    elif action == "previous":
+      self.player.previous(self.sonos_name)
+    elif action == "toggle":
+      self.player.toggle(self.sonos_name)
+    else:
+      logging.warning("Don't know how to do action %s.", action)
