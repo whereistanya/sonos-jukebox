@@ -118,7 +118,7 @@ class Player(Thread):
       return zone.get_current_track_info()
     except ConnectionError:
       logging.warning("Connection error fetching current track.")
-      return ""
+      return None
 
   def get_state(self, zone_name):
     """Return current playing state (playing, paused).

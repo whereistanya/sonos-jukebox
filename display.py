@@ -30,6 +30,7 @@ WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 GREEN = (0, 102, 0)
+PURPLE = (139, 55, 150)
 
 class Alarm(Exception):
   """A deadline for things that get wedged."""
@@ -115,12 +116,13 @@ class Display(object):
     os.putenv('SDL_FBDEV', '/dev/fb1')
     os.putenv('SDL_MOUSEDRV', 'TSLIB')
     os.putenv('SDL_MOUSEDEV', '/dev/input/touchscreen')
+    os.putenv('SDL_VIDEODRIVER', 'fbcon')
 
     self.xsize = xsize
     self.ysize = ysize
     self.sonos_name = sonos_name
     pygame.init()
-    pygame.mouse.set_visible(False)
+    pygame.mouse.set_visible(True)
 
     # set_mode hangs if something else is using the display and needs a ^C to
     # continue. Time out after two seconds. This is kind of a hack :-/
@@ -156,18 +158,20 @@ class Display(object):
       self.fill()
       self.check_events()
       pygame.display.flip()
-      self.clock.tick(10) # 10x per second
+      self.clock.tick(10) # 10 times per second
 
   def fill(self):
     """Paint the screen with a background colour, buttons and messages."""
-    self.screen.fill(GREEN)
+    self.screen.fill(PURPLE)
     track = self.player.get_current(self.sonos_name)
     if track:
       title = self.font20.render(track['title'], True, WHITE)
       album = self.font12.render(track['album'], True, WHITE)
+      artist = self.font12.render(track['artist'], True, WHITE)
     else:
       title = self.font20.render("Sonos Jukebox", True, WHITE)
       album = self.font20.render("Nothing is playing", True, WHITE)
+      artist = self.font20.render('')
 
     # We print the state, and also change the pause/unpause button's text based
     # on whether it's currently playing.
@@ -186,10 +190,12 @@ class Display(object):
 
     title_x = max((self.xsize - title.get_width()) / 2, 0)
     album_x = max((self.xsize - album.get_width()) / 2, 0)
+    artist_x = max((self.xsize - artist.get_width()) / 2, 0)
     state_x = (self.xsize - state_message.get_width()) / 2
-    self.screen.blit(title, (title_x, 60))
-    self.screen.blit(album, (album_x, 110))
-    self.screen.blit(state_message, (state_x, 150))
+    self.screen.blit(title, (title_x, 40))
+    self.screen.blit(album, (album_x, 80))
+    self.screen.blit(artist, (artist_x, 100))
+    self.screen.blit(state_message, (state_x, 120))
 
     for button in self.buttons.values():
       pygame.draw.rect(self.screen, button.color, button.get())
