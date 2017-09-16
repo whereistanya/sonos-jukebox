@@ -114,7 +114,11 @@ class Player(Thread):
       raise PlayerException("Can't find the %s zone. Have %s" % (
           zone_name, self.zones.keys()))
     zone = self.zones[zone_name]
-    return zone.get_current_track_info()
+    try:
+      return zone.get_current_track_info()
+    except ConnectionError:
+      logging.warning("Connection error fetching current track.")
+      return ""
 
   def get_state(self, zone_name):
     """Return current playing state (playing, paused).
