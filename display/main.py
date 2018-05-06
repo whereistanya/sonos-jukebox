@@ -5,6 +5,8 @@ Control UI for a Sonos. Can forward/rewind/play/pause.
 
 import logging
 import signal
+import sys
+sys.path.append("../lib")
 
 import display
 import sonos

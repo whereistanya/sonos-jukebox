@@ -102,10 +102,11 @@ class Display(object):
     """
 
     # Needed to talk to the raspberry pi's PiTFT display.
-    #os.putenv('SDL_FBDEV', '/dev/fb1')
-    #os.putenv('SDL_MOUSEDRV', 'TSLIB')
-    #os.putenv('SDL_MOUSEDEV', '/dev/input/touchscreen')
-    #os.putenv('SDL_VIDEODRIVER', 'fbcon')
+    # Comment them out to run on a random linux box.
+    os.putenv('SDL_FBDEV', '/dev/fb1')
+    os.putenv('SDL_MOUSEDRV', 'TSLIB')
+    os.putenv('SDL_MOUSEDEV', '/dev/input/touchscreen')
+    os.putenv('SDL_VIDEODRIVER', 'fbcon')
 
     self.xsize = xsize
     self.ysize = ysize
