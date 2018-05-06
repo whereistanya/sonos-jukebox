@@ -6,14 +6,23 @@ If this is used for a PiTFT attached to a raspberry pi, it'll be perfect. Run on
 a desktop, it'll just make a tiny window. Oh well.
 """
 import logging
+import os
 from signal import alarm, signal, SIGALRM, SIGKILL
+from threading import Thread
+
+HAVE_PYGAME = True
 
 # pip install pygame
 # sudo easy_install -U distribute
+# pip install pygameui
 # I had mysterious egg errors until I also did
 # pip install setuptools
 
-import pygame
+try:
+  import pygame
+  import pygameui
+except ImportError:
+  HAVE_PYGAME = False
 
 
 WHITE = (255, 255, 255)
@@ -102,15 +111,16 @@ class Display(object):
     """
 
     # Needed to talk to the raspberry pi's PiTFT display.
-    #os.putenv('SDL_FBDEV', '/dev/fb1')
-    #os.putenv('SDL_MOUSEDRV', 'TSLIB')
-    #os.putenv('SDL_MOUSEDEV', '/dev/input/touchscreen')
-    #os.putenv('SDL_VIDEODRIVER', 'fbcon')
+    os.putenv('SDL_FBDEV', '/dev/fb1')
+    os.putenv('SDL_MOUSEDRV', 'TSLIB')
+    os.putenv('SDL_MOUSEDEV', '/dev/input/touchscreen')
+    os.putenv('SDL_VIDEODRIVER', 'fbcon')
 
     self.xsize = xsize
     self.ysize = ysize
     self.device = device
     pygame.init()
+    pygame.mouse.set_visible(True)
 
     # set_mode hangs if something else is using the display and needs a ^C to
     # continue. Time out after two seconds. This is kind of a hack :-/
@@ -123,7 +133,6 @@ class Display(object):
     except Alarm:
       raise KeyboardInterrupt
 
-    pygame.mouse.set_visible(True)
     self.font20 = pygame.font.SysFont("verdana", 20)
     self.font12 = pygame.font.SysFont("verdana", 12)
     self.clock = pygame.time.Clock()
@@ -132,6 +141,12 @@ class Display(object):
     self.buttons["back"] = Button("back", 10, 180, 60, 50, BLUE, "previous")
     self.buttons["toggle"] = Button("pause", 130, 180, 60, 50, RED, "toggle")
     self.buttons["skip"] = Button("skip", 250, 180, 60, 50, BLUE, "next")
+
+  def start(self):
+    """Spawn a thread to keep refreshing the display."""
+    d = Thread(name='display', target=self.run)
+    d.setDaemon(True)
+    d.start()
 
   def run(self):
     """Run forever and keep refreshing the screen."""
@@ -202,10 +217,10 @@ class Display(object):
       action: (string) What to do.
     """
     if action == "next":
-      self.device.next()
+      self.device.next(self.sonos_name)
     elif action == "previous":
-      self.device.previous()
+      self.device.previous(self.sonos_name)
     elif action == "toggle":
-      self.device.toggle()
+      self.device.toggle(self.sonos_name)
     else:
       logging.warning("Don't know how to do action %s.", action)
