@@ -12,7 +12,7 @@ After=syslog.target network.target network-online.target
 [Service]
 Type=simple
 WorkingDirectory=/home/pi/sonos-jukebox
-ExecStart=/home/pi/sonos-jukebox/server.py
+ExecStart=/home/pi/sonos-jukebox/jukebox/main.py
 Restart=always
 LimitNOFILE=10000
 StandardOutput=syslog

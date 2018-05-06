@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/env python
 """
 Operate your Sonos with Amazon Dash buttons.
 
@@ -7,6 +7,7 @@ MP3s over HTTP, so you can choose and play them. The directory name is
 currently hard coded in main().
 """
 
+# python -m ../lib/sonos.py
 
 import logging
 import os
@@ -18,7 +19,6 @@ import scapy.all as scapy
 import signal
 
 import buttons
-import display
 import localwebserver
 import my_ip
 import sonos
@@ -39,8 +39,6 @@ class Sniffer(Thread):
       local_uri: (str) URL of the server with the MP3s. e.g., http://host:port/
       player: (sonos.Player) An initialised sonos.Player, which knows about
               your devices.
-      screen: (display.Display): a Display which can draw things on an attached
-              screen using pygame.
     """
     super(Sniffer, self).__init__()
     self.webserver = local_uri
@@ -136,14 +134,6 @@ def main():
   except OSError, ex:
     print "Couldn't chdir to %s directory: %s" % (music_dir, ex)
     sys.exit(1)
-
-  # Use a local display if one is available.
-  screen = None
-  if display.HAVE_PYGAME:
-    # TODO(tanya): Don't hard-code the player name, get it from the buttons
-    # config.
-    screen = display.Display(320, 240, player, "Living Room")
-    screen.start()
 
   webserver = localwebserver.HttpServer(port)
   webserver.start()

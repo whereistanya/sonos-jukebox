@@ -1,4 +1,3 @@
-#!/usr/bin/python2.7
 """Handle interactions with the Sonos devices on the network."""
 
 import logging
