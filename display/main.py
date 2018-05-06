@@ -20,11 +20,8 @@ signal.signal(signal.SIGHUP, handler)
 def main():
   """Run the display."""
   player = sonos.Player()
-# TODO(tanya): return a device and don't jump through hoops
-  zone = sonos.Device(player.zone(SONOS))
-  # Use a local display if one is available.
-  screen = None
+  zone = player.zone(SONOS)
   screen = display.Display(320, 240, zone)
-  screen.start()
+  screen.run()
 
 main()

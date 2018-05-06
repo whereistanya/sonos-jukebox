@@ -11,7 +11,6 @@ class PlayerException(Exception):
   """We can't play sonos for any reason."""
   pass
 
-# TODO(tanya): inherit from sonos.Soco.whatever and ditch half these functions.
 class Device(object):
   """A single sonos device."""
   def __init__(self, zone):
@@ -24,10 +23,10 @@ class Device(object):
     """Pause or unpause the zone."""
     state = self.get_state()
     if state == "PLAYING":
-      logging.warning("Zone %s has state %s. Pausing.", self.zone, state)
+      logging.warning("Zone %s has state %s. Pausing.", self.zone.player_name, state)
       self.pause()
     else:
-      logging.warning("Zone %s has state %s. Playing.", self.zone, state)
+      logging.warning("Zone %s has state %s. Playing.", self.zone.player_name, state)
       self.unpause()
 
   def pause(self):
@@ -62,17 +61,15 @@ class Device(object):
     self.zone.play_from_queue(0)
 
   def maybe_refresh_state(self):
-    """Pull latest information from the sonos, if we haven't recently."""
+    """Pull latest information from the sonos, if we haven't in the last 1s."""
     now = time.time()
     if now - self.last_called < 1:
       return
+    self.last_called = now
 
-    try:
-      self.current_track = self.zone.get_current_track_info()
-      info = self.zone.get_current_transport_info()
-      self.current_state = info['current_transport_state']
-    except ConnectionError:
-      logging.warning("Connection error refreshing current track and state.")
+    self.current_track = self.zone.get_current_track_info()
+    info = self.zone.get_current_transport_info()
+    self.current_state = info['current_transport_state']
 
   def get_current(self):
     """Return current playing track as a dict.
@@ -110,6 +107,6 @@ class Player(Thread):
   def zone(self, name):
     """Return sonos device for zone name."""
     if name in self.zones:
-      return self.zones[name]
+      return Device(self.zones[name])
     logging.warning("Don't know a zone called %s.", name)
     return None
