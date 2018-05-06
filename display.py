@@ -18,6 +18,7 @@ HAVE_PYGAME = True
 # I had mysterious egg errors until I also did
 # pip install setuptools
 
+# If pygame's not installed, that shouldn't stop the binary from running.
 try:
   import pygame
   import pygameui
@@ -102,12 +103,13 @@ class Button(object):
 class Display(object):
   """If there's a display attached, display stuff on it."""
 
-  def __init__(self, xsize, ysize, device):
+  def __init__(self, xsize, ysize, player, sonos_name):
     """Prepare a screen to display information about the sonos.
 
     Args:
       xsize, ysize: (int) dimensions of screen in pixels
-      device: (sonos.Device) the sonos to display information for
+      player: (sonos.Player) sonos controller
+      sonos_name: (str) the sonos to display information for
     """
 
     # Needed to talk to the raspberry pi's PiTFT display.
@@ -118,7 +120,7 @@ class Display(object):
 
     self.xsize = xsize
     self.ysize = ysize
-    self.device = device
+    self.sonos_name = sonos_name
     pygame.init()
     pygame.mouse.set_visible(True)
 
@@ -142,6 +144,8 @@ class Display(object):
     self.buttons["toggle"] = Button("pause", 130, 180, 60, 50, RED, "toggle")
     self.buttons["skip"] = Button("skip", 250, 180, 60, 50, BLUE, "next")
 
+    self.player = player
+
   def start(self):
     """Spawn a thread to keep refreshing the display."""
     d = Thread(name='display', target=self.run)
@@ -159,7 +163,7 @@ class Display(object):
   def fill(self):
     """Paint the screen with a background colour, buttons and messages."""
     self.screen.fill(PURPLE)
-    track = self.device.get_current()
+    track = self.player.get_current(self.sonos_name)
     if track:
       title = self.font20.render(track['title'], True, WHITE)
       album = self.font12.render(track['album'], True, WHITE)
@@ -171,7 +175,7 @@ class Display(object):
 
     # We print the state, and also change the pause/unpause button's text based
     # on whether it's currently playing.
-    state = self.device.get_state()
+    state = self.player.get_state(self.sonos_name)
     if not state:
       state = ""
     elif state == "PLAYING":
@@ -217,10 +221,10 @@ class Display(object):
       action: (string) What to do.
     """
     if action == "next":
-      self.device.next(self.sonos_name)
+      self.player.next(self.sonos_name)
     elif action == "previous":
-      self.device.previous(self.sonos_name)
+      self.player.previous(self.sonos_name)
     elif action == "toggle":
-      self.device.toggle(self.sonos_name)
+      self.player.toggle(self.sonos_name)
     else:
       logging.warning("Don't know how to do action %s.", action)
