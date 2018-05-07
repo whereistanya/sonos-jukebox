@@ -6,6 +6,7 @@ If this is used for a PiTFT attached to a raspberry pi, it'll be perfect. Run on
 a desktop, it'll just make a tiny window. Oh well.
 """
 import logging
+import os
 from signal import alarm, signal, SIGALRM, SIGKILL
 
 # pip install pygame
