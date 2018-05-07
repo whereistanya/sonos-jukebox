@@ -6,6 +6,7 @@ Control UI for a Sonos. Can forward/rewind/play/pause.
 import logging
 import signal
 import sys
+# Change to whereever sonos.py lives.
 sys.path.append("/home/pi/sonos-jukebox/lib")
 
 
