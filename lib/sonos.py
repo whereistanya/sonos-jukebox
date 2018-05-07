@@ -39,11 +39,17 @@ class Device(object):
 
   def next(self):
     """Jump to the next track."""
-    self.zone.next()
+    try:
+      self.zone.next()
+    except soco.exceptions.SoCoUPnPException:
+      logging.warning("Can't seek past the end.")
 
   def previous(self):
     """Go back one track."""
-    self.zone.previous()
+    try:
+      self.zone.previous()
+    except soco.exceptions.SoCoUPnPException:
+      logging.warning("Can't seek past the start.")
 
   def play(self, urls):
     """Play a bunch of MP3s from their URLs.

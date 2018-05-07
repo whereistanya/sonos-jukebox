@@ -39,7 +39,9 @@ A basic sonos frontend. It shows the current track, and buttons to play, pause,
 skip and go back. By default it expects an adafruit capacitive pitft. Comment
 out the "os.putenv" lines if you're using a laptop or something.
 
-main.py runs on a linux machine on the same wifi as your Sonos(es).
+main.py runs on a linux machine on the same wifi as your Sonos(es). I needed to
+run as root to use the display on my raspberry pi.
+
 The name of the sonos is hard coded in the main, so replace the SONOS variable
 with the name of the sonos you want to display.
 
