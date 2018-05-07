@@ -113,6 +113,7 @@ class Player(Thread):
   def zone(self, name):
     """Return sonos device for zone name."""
     if name in self.zones:
+      # TODO: don't make a new Device if one already exists for this zone. 
       return Device(self.zones[name])
     logging.warning("Don't know a zone called %s.", name)
     return None
