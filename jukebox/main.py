@@ -12,7 +12,7 @@ currently hard coded in main().
 import logging
 import os
 import sys
-sys.path.append("../lib")
+sys.path.append("/home/pi/sonos-jukebox/lib")
 
 import time
 import urllib
