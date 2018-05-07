@@ -7,11 +7,10 @@ MP3s over HTTP, so you can choose and play them. The directory name is
 currently hard coded in main().
 """
 
-# python -m ../lib/sonos.py
-
 import logging
 import os
 import sys
+# Change to wherever the sonos.py file lives.
 sys.path.append("/home/pi/sonos-jukebox/lib")
 
 import time
