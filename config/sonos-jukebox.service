@@ -1,23 +1,22 @@
-# systemd file for sonos-display. Drop this at
-# /etc/systemd/system/sonos-display.service and enable it to start at boot with
-# systemctl enable sonos-jukebox. It logs to regular syslog so grep for
-# sonos-display # in /var/log/daemon.log or equivalent.
+# systemd file for sonos-jukebox. Drop this at
+# /etc/systemd/system/sonos-jukebox.service and enable it to start at boot with
+# in /var/log/daemon.log or equivalent.
 # You probably need to change the directory in WorkingDirectory= and
 # ExecStart= to point at wherever the code is.
 
 [Unit]
-Description=Sonos Display
+Description=Sonos Jukebox
 After=syslog.target network.target network-online.target
 
 [Service]
 Type=simple
 WorkingDirectory=/home/pi/sonos-jukebox
-ExecStart=/home/pi/sonos-jukebox/display/main.py
+ExecStart=/home/pi/sonos-jukebox/jukebox/main.py
 Restart=always
 LimitNOFILE=10000
 StandardOutput=syslog
 StandardError=syslog
-SyslogIdentifier=sonos-display
+SyslogIdentifier=sonos-jukebox
 
 [Install]
 WantedBy=default.target
