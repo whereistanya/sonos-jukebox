@@ -1,6 +1,6 @@
 # systemd file for sonos-jukebox. Drop this at
 # /etc/systemd/system/sonos-jukebox.service and enable it to start at boot with
-# systemctl enable sons-jukebox. It logs to regular syslog so grep for sonos-jukebox
+# systemctl enable sonos-jukebox. It logs to regular syslog so grep for sonos-jukebox
 # in /var/log/daemon.log or equivalent.
 # You probably need to change the directory in WorkingDirectory= and
 # ExecStart= to point at wherever the code is.
