@@ -33,6 +33,10 @@ def main():
 
   ipaddr = my_ip.lookup()
   player = sonos.Player()
+  device = player.zone(SONOS_NAME)
+  if not device:
+    print ("Can't find a device called %s", zone)
+    sys.exit(1)
 
   webserver = localwebserver.HttpServer(PORT)
   webserver.start()
@@ -49,7 +53,7 @@ def main():
   tts.save(filename)
 
   url = os.path.join(uri, urllib.pathname2url(filename))
-  player.play([url,], SONOS_NAME)
+  device.play([url,])
   # Give the sonos a moment to grab the mp3 before killing the webserver.
   time.sleep(1)
 
