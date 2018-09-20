@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/env python
 
 """
 Have your Sonos say words. Converts the text to mp3, spins up a webserver to
@@ -21,7 +21,7 @@ import urllib
 from gtts import gTTS
 from soco import SoCo
 
-sys.path.append("..")
+sys.path.append("../lib")
 import localwebserver
 import my_ip
 import sonos
@@ -30,6 +30,7 @@ SONOS_NAME = "Living Room"
 PORT = 8081
 
 def main():
+
   ipaddr = my_ip.lookup()
   player = sonos.Player()
 
