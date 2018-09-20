@@ -1,4 +1,4 @@
-This directory has two toy projects for interacting with Sonos players.
+This directory has three toy projects for interacting with Sonos players.
 
 # talker (**talker/talker.py**)
 A command-line script that makes the sonos say words. 
@@ -34,18 +34,39 @@ Living Room
 Bedroom  
 
 ------------------------------------------------------------------------------
+# Display (**display/main.py**)
+A basic sonos frontend. It shows the current track, and buttons to play, pause,
+skip and go back. By default it expects an adafruit capacitive pitft. Comment
+out the "os.putenv" lines if you're using a laptop or something.
 
-# sonos-jukebox (**server.py**)
+main.py runs on a linux machine on the same wifi as your Sonos(es). I needed to
+run as root to use the display on my raspberry pi.
+
+The name of the sonos is hard coded in the main, so replace the SONOS variable
+with the name of the sonos you want to display.
+
+## Requirements
+
+### Install python modules
+sudo pip install soco        # for Sonos  
+sudo pip install pygame      # for the display
+
+### Run it.
+
+`main.py`
+
+or make it start on boot by adding an init.d or systemd config. There's a
+systemd example at [config/sonos-displau.service](
+https://github.com/whereistanya/sonos-jukebox/blob/master/config/sonos-display.service).
+
+
+# Jukebox (**jukebox/main.py**)
 A thing that lets you control your Sonos using Amazon Dash buttons. I stole this
 idea from [Rob Konigsberg](http://github.com/kberg), who was using Dash buttons
 to make his Sonos play radio stations. This version serves local MP3s and plays
 different directories depending on which button you press.
 
-There's an optional display component, which will only try to run if you have
-the pygame module installed. It's tested with an adafruit capacitive pitft.
-Just comment out or delete the display in server.py if you don't want it.
-
-server.py runs as root on a linux machine on the same wifi as your Sonos(es).
+main.py runs as root on a linux machine on the same wifi as your Sonos(es).
 It notices arp traffic from other devices on your network. It's configured to
 watch for a bunch of specific MAC addresses and trigger an action (defined in
 buttons.py) whenever one of them is active. It can watch for Amazon Dash buttons
@@ -61,7 +82,7 @@ sudo pip install soco        # for Sonos
 sudo pip install requests    # For REST API  
 
 ### Put MP3s in place
-You need a long-running Linux machine on your local network to run server.py
+You need a long-running Linux machine on your local network to run main.py
 on. Make a directory under its cwd called "mp3s". Make directories under that
 with mp3s in them. Use those directory names in your config.
 
@@ -73,7 +94,7 @@ machine that this is running on.
 ## Using it.
 Run the server as root
 
-`sudo server.py`
+`sudo main.py`
 
 or make it start on boot by adding an init.d or systemd config. There's a
 systemd example at [config/sonos-jukebox.service](
@@ -104,7 +125,7 @@ and watch what's going by. You might see your sonos, your wireless gateway, misc
 other stuff you recognise. You'll need the device to be sending traffic or you
 won't see it.
 
-* Or edit server.py's arp_cb() method to to print the MAC addresses that it
+* Or edit main.py's arp_cb() method to to print the MAC addresses that it
 sees.
 
 ### How do I use an Amazon Dash?

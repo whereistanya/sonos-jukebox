@@ -7,16 +7,17 @@ MP3s over HTTP, so you can choose and play them. The directory name is
 currently hard coded in main().
 """
 
-# python -m ../lib/sonos.py
-
 import logging
 import os
 import sys
+# Change to wherever the sonos.py file lives.
+sys.path.append("/home/pi/sonos-jukebox/lib")
+
 import time
 import urllib
 from threading import Thread
-import scapy.all as scapy
 import signal
+import scapy.all as scapy
 
 import buttons
 import localwebserver
@@ -90,35 +91,45 @@ class Sniffer(Thread):
       logging.warning("Couldn't parse instructions from %s: %s", cmd, ex)
       return
 
+    device = self.player.zone(zone)
+    if not device:
+      logging.warning("Can't find a device called %s", zone)
+      return
+
     # If this is the same button we saw last, pause or unpause it.
     if button == self.last_button:
-      self.player.toggle(zone)
+      device.toggle()
       return
 
     if function == "play_local":
-      self.play_local(music, zone)
+      self.play_local(music, device)
       self.last_button = button
-    elif function == "play_radio":
-      self.player.play_radio(music, zone)
     else:
       logging.warning("Don't know how to %s.", cmd)
 
-  def play_local(self, music, zone):
+  def play_local(self, music, device):
     """Send the player a bunch of local files to play.
+
+    Blocks the thread. We don't recognise other button clicks until this is
+    done.
 
     Args:
       music: (str) the directory to play, relative to this process's CWD
-      zone: (str) the Sonos to play on
+      zone: (sonos.Device) the Sonos to play on
     """
     # Look at all the files in the specified directory and add their URIs.
     mp3s = []
-    files = os.listdir(music)
+    try:
+      files = os.listdir(music)
+    except OSError, ex:
+      logging.warning("OS Error: %s", ex)
+      return
     for filename in files:
       if filename.endswith(".mp3"):
         mp3s.append(os.path.join(self.webserver, music,
                                  urllib.pathname2url(filename)))
 
-    self.player.play(sorted(mp3s), zone)
+    device.play(sorted(mp3s))
 
 
 def main():
